@@ -166,7 +166,7 @@ export default function BakanlikAlim() {
             disablePortal
             options={bakanliklar}
             sx={{ 
-              width: 400,
+              width: "20rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
                 padding: "8px"
