@@ -9,7 +9,8 @@ import Image from "next/image";
 const bakanliklar = [
     { label: "Adalet Bakanlığı", site: "https://www.adalet.gov.tr/arsiv?hl=tr",logo:"/assets/adaletbakanligi.jpg" },
     { label: "Sağlık Bakanlığı", site: "https://www.saglik.gov.tr/TR-99316/personel-duyurulari.html",logo:"/assets/saglikbakanligi.png" },
-];
+    { label: "Çevre Ve Şehircilik Bakanlığı", site: "https://personeldb.csb.gov.tr/duyurular",logo:"/assets/cevrevesehircilik.jpg" },
+  ];
 
 export default function BakanlikAlim() {
   const [announcementsDatas,setannouncementsData] = useState([])
@@ -96,6 +97,43 @@ export default function BakanlikAlim() {
         
             console.log("Parsed Data:", announcements);
             setannouncementsData(announcements);
+          })
+          .catch(error => console.error("Hata:", error));
+        }
+        if(value.label ==="Çevre Ve Şehircilik Bakanlığı"){
+          const proxyUrl = "https://api.corsproxy.io/";
+          const targetUrl =  value.site;
+
+          fetch(proxyUrl + targetUrl,{
+            headers:{
+              'Accept-Language': 'tr-TR,tr;q=0.9',
+            }
+          })
+          .then(response => response.text())
+          .then(data => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data, "text/html");        
+        const announcements = []
+        const items = doc.querySelectorAll('.items .item');
+        items.forEach(item => {
+          const dateElements = item.querySelector('.date')?.querySelectorAll('strong');
+          const linkElement = item.querySelector('a[href]');
+          const titleElement = item.querySelector('.title');
+          
+          // Tarih formatlama (Gün Ay Yıl)
+          const date = dateElements?.length === 3 
+            ? `${dateElements[0].textContent.trim()} ${dateElements[1].textContent.trim()} ${dateElements[2].textContent.trim()}`
+            : 'Tarih Belirtilmemiş';
+        
+          announcements.push({
+            title: titleElement?.textContent.trim() || 'Başlık Yok',
+            link: "https://personeldb.csb.gov.tr/"+(linkElement?.getAttribute('href') || '#'),
+            date: date,
+            // Eğer açıklama da gerekiyorsa:
+            description: item.querySelector('.desc')?.textContent.trim() || ''
+          });
+        });
+        setannouncementsData(announcements)
           })
           .catch(error => console.error("Hata:", error));
         }
