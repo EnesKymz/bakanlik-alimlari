@@ -1,6 +1,6 @@
 "use client"
-import { useEffect, useState } from "react";
-import { Autocomplete, TextField, Card, CardContent, Typography } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { Autocomplete, TextField, Card, CardContent, Typography, CircularProgress } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import DocumentIcon from '@mui/icons-material/Description';
 import GovernmentIcon from '@mui/icons-material/AccountBalance';
@@ -14,132 +14,143 @@ const bakanliklar = [
 
 export default function BakanlikAlim() {
   const [announcementsDatas,setannouncementsData] = useState([])
-
+  const loading = useRef()
     const [selectedBakanlik, setSelectedBakanlik] = useState(null);
     async function getDuyurular(value) {
-      try {
-        setSelectedBakanlik(value)
-        if(value.label ==="Adalet Bakanlığı"){
-          const proxyUrl = "https://api.corsproxy.io/";
-          const targetUrl =  value.site;
-
-          fetch(proxyUrl + targetUrl,{
-            headers:{
-              'Accept-Language': 'tr-TR,tr;q=0.9',
-            }
-          })
-          .then(response => response.text())
-          .then(data => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data, "text/html");        
-        const announcementLinks = doc.querySelectorAll('#duyurular-tumu a.ab-announcement');
-        const announcements = []
-        announcementLinks.forEach(link => {
-          const titleElement = link.querySelector('h5.fw-bold');
-          const dateElement = link.querySelector('.ab-announcement--time');
-          const departmentElement = link.querySelector('.ab-content');
-          
-          if (titleElement && dateElement) {
-            announcements.push({
-              title: titleElement.textContent.trim(),
-              date: dateElement.textContent.trim(),
-              department: departmentElement ? departmentElement.textContent.trim() : '',
-              link: link.getAttribute('href')
-            });
-          }
-          setannouncementsData(announcements)
-        });
-          })
-          .catch(error => console.error("Hata:", error));
-        }
-        if(value.label === "Sağlık Bakanlığı") {
-          const proxyUrl = "https://api.corsproxy.io/";
-          const targetUrl = value.site;
-        
-          fetch(`${proxyUrl}?url=${encodeURIComponent(targetUrl)}`, {
-            headers: {
-              'Accept-Language': 'tr-TR,tr;q=0.9',
-            }
-          })
-          .then(response => response.text())
-          .then(data => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data, "text/html");
+      const getInformations =async() =>{
+        try {
+          setannouncementsData([])
+          loading.current = true
+          setSelectedBakanlik(value)
+          if(value.label ==="Adalet Bakanlığı"){
+            const proxyUrl = "https://api.corsproxy.io/";
+            const targetUrl =  value.site;
+  
+            fetch(proxyUrl + targetUrl,{
+              headers:{
+                'Accept-Language': 'tr-TR,tr;q=0.9',
+              }
+            })
+            .then(response => response.text())
+            .then(data => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(data, "text/html");        
+          const announcementLinks = doc.querySelectorAll('#duyurular-tumu a.ab-announcement');
+          const announcements = []
+          announcementLinks.forEach(link => {
+            const titleElement = link.querySelector('h5.fw-bold');
+            const dateElement = link.querySelector('.ab-announcement--time');
+            const departmentElement = link.querySelector('.ab-content');
             
-            // Düzeltilmiş selector
-            const rows = doc.querySelectorAll('.bakanlik_haber_duyuru_listele_item tr');
-            const announcements = [];
-        
-            rows.forEach(row => {
-              const dateElement = row.querySelector('.haber_duyuru_date');
-              const titleLink = row.querySelector('.bakanlik_haber_link');
-              const departmentLink = row.querySelector('.bakanlik_haber_gm_link');
-        
-              // Tarih formatlama
-              const day = dateElement?.querySelector('.date_01')?.textContent?.trim() || '';
-              const month = dateElement?.querySelector('.date_02')?.textContent?.trim() || '';
-              const year = dateElement?.querySelector('.date_03')?.textContent?.trim() || '';
-              
-              // Türkçe tarih formatı
-              const turkceAylar = {
-                'Mar': 'Mart', 'Şub': 'Şubat' // Diğer ayları ekleyin
-              };
-              
-              const announcement = {
-                title: titleLink?.textContent?.trim() || 'Başlık Yok',
-                link: titleLink?.getAttribute('href') || '#',
-                date: `${day} ${turkceAylar[month] || month} ${year}`,
-                department: departmentLink?.textContent?.trim() || 'Genel Müdürlük'
-              };
-              
-              announcements.push(announcement);
-            });
-        
-            console.log("Parsed Data:", announcements);
-            setannouncementsData(announcements);
-          })
-          .catch(error => console.error("Hata:", error));
-        }
-        if(value.label ==="Çevre Ve Şehircilik Bakanlığı"){
-          const proxyUrl = "https://api.corsproxy.io/";
-          const targetUrl =  value.site;
-
-          fetch(proxyUrl + targetUrl,{
-            headers:{
-              'Accept-Language': 'tr-TR,tr;q=0.9',
+            if (titleElement && dateElement) {
+              announcements.push({
+                title: titleElement.textContent.trim(),
+                date: dateElement.textContent.trim(),
+                department: departmentElement ? departmentElement.textContent.trim() : '',
+                link: link.getAttribute('href')
+              });
             }
-          })
-          .then(response => response.text())
-          .then(data => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data, "text/html");        
-        const announcements = []
-        const items = doc.querySelectorAll('.items .item');
-        items.forEach(item => {
-          const dateElements = item.querySelector('.date')?.querySelectorAll('strong');
-          const linkElement = item.querySelector('a[href]');
-          const titleElement = item.querySelector('.title');
-          
-          // Tarih formatlama (Gün Ay Yıl)
-          const date = dateElements?.length === 3 
-            ? `${dateElements[0].textContent.trim()} ${dateElements[1].textContent.trim()} ${dateElements[2].textContent.trim()}`
-            : 'Tarih Belirtilmemiş';
-        
-          announcements.push({
-            title: titleElement?.textContent.trim() || 'Başlık Yok',
-            link: "https://personeldb.csb.gov.tr/"+(linkElement?.getAttribute('href') || '#'),
-            date: date,
-            // Eğer açıklama da gerekiyorsa:
-            description: item.querySelector('.desc')?.textContent.trim() || ''
+            setannouncementsData(announcements)
           });
-        });
-        setannouncementsData(announcements)
-          })
-          .catch(error => console.error("Hata:", error));
+            })
+            .catch(error => console.error("Hata:", error));
+          }
+          if(value.label === "Sağlık Bakanlığı") {
+            const proxyUrl = "https://api.corsproxy.io/";
+            const targetUrl = value.site;
+          
+            fetch(`${proxyUrl}?url=${encodeURIComponent(targetUrl)}`, {
+              headers: {
+                'Accept-Language': 'tr-TR,tr;q=0.9',
+              }
+            })
+            .then(response => response.text())
+            .then(data => {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(data, "text/html");
+              
+              // Düzeltilmiş selector
+              const rows = doc.querySelectorAll('.bakanlik_haber_duyuru_listele_item tr');
+              const announcements = [];
+          
+              rows.forEach(row => {
+                const dateElement = row.querySelector('.haber_duyuru_date');
+                const titleLink = row.querySelector('.bakanlik_haber_link');
+                const departmentLink = row.querySelector('.bakanlik_haber_gm_link');
+          
+                // Tarih formatlama
+                const day = dateElement?.querySelector('.date_01')?.textContent?.trim() || '';
+                const month = dateElement?.querySelector('.date_02')?.textContent?.trim() || '';
+                const year = dateElement?.querySelector('.date_03')?.textContent?.trim() || '';
+                
+                // Türkçe tarih formatı
+                const turkceAylar = {
+                  'Mar': 'Mart', 'Şub': 'Şubat' // Diğer ayları ekleyin
+                };
+                
+                const announcement = {
+                  title: titleLink?.textContent?.trim() || 'Başlık Yok',
+                  link: titleLink?.getAttribute('href') || '#',
+                  date: `${day} ${turkceAylar[month] || month} ${year}`,
+                  department: departmentLink?.textContent?.trim() || 'Genel Müdürlük'
+                };
+                
+                announcements.push(announcement);
+              });
+          
+              console.log("Parsed Data:", announcements);
+              setannouncementsData(announcements);
+            })
+            .catch(error => console.error("Hata:", error));
+          }
+          if(value.label ==="Çevre Ve Şehircilik Bakanlığı"){
+            const proxyUrl = "https://api.corsproxy.io/";
+            const targetUrl =  value.site;
+  
+            fetch(proxyUrl + targetUrl,{
+              headers:{
+                'Accept-Language': 'tr-TR,tr;q=0.9',
+              }
+            })
+            .then(response => response.text())
+            .then(data => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(data, "text/html");        
+          const announcements = []
+          const items = doc.querySelectorAll('.items .item');
+          items.forEach(item => {
+            const dateElements = item.querySelector('.date')?.querySelectorAll('strong');
+            const linkElement = item.querySelector('a[href]');
+            const titleElement = item.querySelector('.title');
+            
+            // Tarih formatlama (Gün Ay Yıl)
+            const date = dateElements?.length === 3 
+              ? `${dateElements[0].textContent.trim()} ${dateElements[1].textContent.trim()} ${dateElements[2].textContent.trim()}`
+              : 'Tarih Belirtilmemiş';
+          
+            announcements.push({
+              title: titleElement?.textContent.trim() || 'Başlık Yok',
+              link: "https://personeldb.csb.gov.tr/"+(linkElement?.getAttribute('href') || '#'),
+              date: date,
+              // Eğer açıklama da gerekiyorsa:
+              description: item.querySelector('.desc')?.textContent.trim() || ''
+            });
+          });
+          setannouncementsData(announcements)
+            })
+            .catch(error => console.error("Hata:", error));
+          }
+        } catch (error) {
+            console.error("Hata oluştu:", error);
+        }finally{
+          return true;
         }
-      } catch (error) {
-          console.error("Hata oluştu:", error);
       }
+      const isGet =await getInformations()
+      if(isGet) {
+        loading.current= false
+      }
+   
   }
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 p-8">
@@ -205,7 +216,8 @@ export default function BakanlikAlim() {
             </div>
     
             {/* Duyurular Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {!loading.current ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {announcementsDatas.map((announcement, index) => (
                 <div 
                   key={index}
@@ -241,6 +253,8 @@ export default function BakanlikAlim() {
                 </div>
               ))}
             </div>
+            ) : (<CircularProgress/>)}
+            
           </div>
         </div>
       )}
