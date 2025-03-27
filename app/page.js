@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Autocomplete, TextField, Card, CardContent, Typography, CircularProgress } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import DocumentIcon from '@mui/icons-material/Description';
@@ -10,15 +10,18 @@ const bakanliklar = [
     { label: "Adalet Bakanlığı", site: "https://www.adalet.gov.tr/arsiv?hl=tr",logo:"/assets/adaletbakanligi.jpg" },
     { label: "Sağlık Bakanlığı", site: "https://www.saglik.gov.tr/TR-99316/personel-duyurulari.html",logo:"/assets/saglikbakanligi.png" },
     { label: "Çevre Ve Şehircilik Bakanlığı", site: "https://personeldb.csb.gov.tr/duyurular",logo:"/assets/cevrevesehircilik.jpg" },
+    {label:"Sanayi Ve Teknoloji Bakanlığı", site:"https://api.sanayi.gov.tr/api/Duyuru/GetDuyurular?adet=10&sayfa=1&yayinSekli=0",logo:"/assets/sanayiteknolojibakanligi.png"}
   ];
 
 export default function BakanlikAlim() {
   const [announcementsDatas,setannouncementsData] = useState([])
   const loading = useRef()
-    const [selectedBakanlik, setSelectedBakanlik] = useState(null);
+  const [selectedBakanlik, setSelectedBakanlik] = useState(null);
+  const [errorMessage,setErrorMessage] = useState(null);
     async function getDuyurular(value) {
       const getInformations =async() =>{
         try {
+          setErrorMessage(null)
           setannouncementsData([])
           loading.current = true
           setSelectedBakanlik(value)
@@ -140,8 +143,35 @@ export default function BakanlikAlim() {
             })
             .catch(error => console.error("Hata:", error));
           }
+          if(value.label ==="Sanayi Ve Teknoloji Bakanlığı"){
+            const proxyUrl = "https://api.corsproxy.io/";
+            const targetUrl =  value.site;
+            const response = await fetch(targetUrl);
+        
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const jsonData = await response.json();
+            const announcements = []
+            for(const doc of jsonData){
+              let link;
+              for(const doc2 of doc.pageContent.linkAddress){
+                link = doc2.text
+              }
+              announcements.push({
+                title:doc.text,
+                date:doc.date,
+                department:doc.note,
+                link:("https://www.sanayi.gov.tr/"+link)||null,
+              })
+            }
+            setannouncementsData(announcements)
+          }
         } catch (error) {
-            console.error("Hata oluştu:", error);
+            console.error("Hata oluştu:", error.message);
+            setErrorMessage(error.message)
+            return true;
         }finally{
           return true;
         }
@@ -157,7 +187,7 @@ export default function BakanlikAlim() {
       {/* Başlık ve Arama */}
       <div className="max-w-4xl mx-auto mb-12 text-center">
         <h1 className="text-4xl font-bold text-indigo-900 mb-4">
-          Kamu Alımları Takip Sistemi
+          Kamu Duyuruları Takip Sistemi
         </h1>
         
         {/* Bakanlık Seçimi */}
@@ -218,7 +248,9 @@ export default function BakanlikAlim() {
             {/* Duyurular Grid */}
             {!loading.current ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {announcementsDatas.map((announcement, index) => (
+              {
+              !errorMessage ? (
+              announcementsDatas.map((announcement, index) => (
                 <div 
                   key={index}
                   className="group bg-gray-50 hover:bg-white rounded-xl p-6 transition-all duration-300 shadow-md hover:shadow-lg border border-gray-200 hover:border-indigo-300"
@@ -242,16 +274,21 @@ export default function BakanlikAlim() {
                   </div>
     
                   <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                      {announcement.department}
-                    </span>
+                    {
+                      announcement.department && ( <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                        {announcement.department||null }
+                      </span>)
+                    }
+                   
                     <button onClick={()=>window.open(announcement.link,'_blank')} className="text-indigo-600 cursor-pointer hover:text-indigo-800 flex items-center">
                       Detaylı Görüntüle
                       <ArrowRightIcon className="w-4 h-4 ml-2" />
                     </button>
                   </div>
                 </div>
-              ))}
+              ))
+            ):(<div>{errorMessage}</div>)
+              }
             </div>
             ) : (<CircularProgress/>)}
             
