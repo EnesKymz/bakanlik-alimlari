@@ -6,6 +6,8 @@ import DocumentIcon from '@mui/icons-material/Description';
 import GovernmentIcon from '@mui/icons-material/AccountBalance';
 import ArrowRightIcon from '@mui/icons-material/ArrowForward';
 import Image from "next/image";
+
+//bakanlıkların ismi ve sitelerini buraya ekliyoruz
 const bakanliklar = [
     { label: "Adalet Bakanlığı", site: "https://www.adalet.gov.tr/arsiv?hl=tr",logo:"/assets/adaletbakanligi.jpg" },
     { label: "Sağlık Bakanlığı", site: "https://www.saglik.gov.tr/TR-99316/personel-duyurulari.html",logo:"/assets/saglikbakanligi.png" },
@@ -25,12 +27,15 @@ export default function BakanlikAlim() {
           setannouncementsData([])
           loading.current = true
           setSelectedBakanlik(value)
+          //sanayi ve teknoloji bakanlığı haricinde aynı işlem olduğu için Adalet Bakanlığı içerisinde anlattım
           if(value.label ==="Adalet Bakanlığı"){
+            //cors olduğu için api.corsproxy.io sitesi ile çekmeye çalışıyoruz
             const proxyUrl = "https://api.corsproxy.io/";
             const targetUrl =  value.site;
   
             fetch(proxyUrl + targetUrl,{
               headers:{
+                //sitelerde yabancı dil de olduğu için türkçe çekmek istediğimizden Accept-Language tr-TR kullanıyoruz 
                 'Accept-Language': 'tr-TR,tr;q=0.9',
               }
             })
@@ -38,22 +43,22 @@ export default function BakanlikAlim() {
             .then(data => {
           const parser = new DOMParser();
           const doc = parser.parseFromString(data, "text/html");        
-          const announcementLinks = doc.querySelectorAll('#duyurular-tumu a.ab-announcement');
+          const announcementLinks = doc.querySelectorAll('#duyurular-tumu a.ab-announcement'); //#duyurular-tumu olan divin içine giriyoruz daha sonra <a ab-announcement içerisine giriyoruz>
           const announcements = []
           announcementLinks.forEach(link => {
-            const titleElement = link.querySelector('h5.fw-bold');
+            const titleElement = link.querySelector('h5.fw-bold');// burada başlıkları tarihleri ve departman adını çekiyoruz
             const dateElement = link.querySelector('.ab-announcement--time');
             const departmentElement = link.querySelector('.ab-content');
             
             if (titleElement && dateElement) {
-              announcements.push({
+              announcements.push({//verileri announcement listesine ekliyoruz
                 title: titleElement.textContent.trim(),
                 date: dateElement.textContent.trim(),
                 department: departmentElement ? departmentElement.textContent.trim() : '',
                 link: link.getAttribute('href')
               });
             }
-            setannouncementsData(announcements)
+            setannouncementsData(announcements) //verileri set edip returne gönderiyoruz
           });
             })
             .catch(error => console.error("Hata:", error));
@@ -144,6 +149,7 @@ export default function BakanlikAlim() {
             .catch(error => console.error("Hata:", error));
           }
           if(value.label ==="Sanayi Ve Teknoloji Bakanlığı"){
+            //sanayi ve teknoloji bakanlığının apisinden verileri çekiyoruz
             const proxyUrl = "https://api.corsproxy.io/";
             const targetUrl =  value.site;
             const response = await fetch(targetUrl);
@@ -154,31 +160,31 @@ export default function BakanlikAlim() {
             
             const jsonData = await response.json();
             const announcements = []
-            for(const doc of jsonData){
+            for(const doc of jsonData){ //çektiğimiz JSON dosyasındaki listeleri ayrı ayrı çekip announcements listesine ekliyoruz
               let link;
-              for(const doc2 of doc.pageContent.linkAddress){
+              for(const doc2 of doc.pageContent.linkAddress){//girdiğimiz verinin içerisindeki link [0] içerisinde olduğu için for kullandık
                 link = doc2.text
               }
-              announcements.push({
+              announcements.push({//announcements listesine ekliyoruz
                 title:doc.text,
                 date:doc.date,
                 department:doc.note,
                 link:("https://www.sanayi.gov.tr/"+link)||null,
               })
             }
-            setannouncementsData(announcements)
+            setannouncementsData(announcements)//set edip returne gönderiyoruz
           }
-        } catch (error) {
-            console.error("Hata oluştu:", error.message);
-            setErrorMessage(error.message)
+          } catch (error) {
+              console.error("Hata oluştu:", error.message);
+              setErrorMessage(error.message)
+              return true;
+          }finally{
             return true;
-        }finally{
-          return true;
-        }
+          }
       }
-      const isGet =await getInformations()
+      const isGet =await getInformations() //async işlem olduğu için await ile çekiyoruz
       if(isGet) {
-        loading.current= false
+        loading.current= false //yüklendiyse loading = false yapıyoruz verileri gösteriyoruz
       }
    
   }
