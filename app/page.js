@@ -1,5 +1,5 @@
 "use client"
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Autocomplete, TextField, Card, CardContent, Typography, CircularProgress } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import DocumentIcon from '@mui/icons-material/Description';
@@ -20,6 +20,15 @@ export default function BakanlikAlim() {
   const loading = useRef()
   const [selectedBakanlik, setSelectedBakanlik] = useState(null);
   const [errorMessage,setErrorMessage] = useState(null);
+  const [inApp,setIsApp] = useState(false);
+  useEffect(() => {
+    const userAgent = navigator.userAgent || navigator.vendor;
+    
+    // WebView içinden açıldığını kontrol et
+    if (/Android|iPhone|iPad|iPod/i.test(userAgent)) {
+      setIsApp(true);
+    }
+  }, []);
     async function getDuyurular(value) {
       const getInformations =async() =>{
         try {
@@ -198,31 +207,63 @@ export default function BakanlikAlim() {
     return (
     <div className=" bg-gradient-to-b from-blue-50 to-indigo-50">
       <div className="min-h-screen p-8">
-      {/*Kişisel Bilgiler */}
-      <div className="flex items-end justify-end">
-        
-        <button onClick={()=>window.open("https://www.linkedin.com/in/okkes-enes/")} className="p-3 cursor-pointer">
-          <Image 
-          width={36}
-          height={36}
-          className="w-8 h-8 object-contain"
-          src={"/assets/logo/linkedin.png"}
-          alt="Linkedin"
-          />
-        </button>
-        <button onClick={()=>window.open("https://github.com/EnesKymz")} className="p-3 cursor-pointer">
-          <Image 
-          width={36}
-          height={36}
-          className="w-8 h-8 object-contain"
-          src={"/assets/logo/github.png"}
-          alt="Github"
-          />
-        </button>
+      <div className="flex justify-between">
+        {/*Uygulama Link */}
+        {!inApp && <button onClick={()=>window.open("https://drive.google.com/file/d/1oUMsu7x-cIR9fjOZ0-RNHW3sAupLzGv7/view?usp=sharing")} className="
+          px-6 py-3
+          bg-gradient-to-r from-blue-500 to-blue-600
+          text-white font-medium text-lg
+          rounded-lg
+          shadow-lg
+          hover:shadow-xl
+          transition-all duration-300
+          hover:from-blue-600 hover:to-blue-700
+          active:scale-95
+          transform
+          overflow-hidden
+          group
+          cursor-pointer
+          select-none
+        ">
+    <span className="relative z-10 flex items-center justify-center">
+      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+      Uygulamayı İndir
+    </span>
+    
+    {/* Hover efekti için arkaplan */}
+    <span className="absolute inset-0 bg-blue-700 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
+    
+    {/* Köşe parıltısı */}
+    <span className="absolute top-0 left-0 w-2 h-2 bg-white opacity-30 group-hover:opacity-50 transition-opacity duration-500"></span>
+        </button>}
+        {/*Kişisel Bilgiler */}
+        <div className="flex items-end justify-end">
+          
+          <button onClick={()=>window.open("https://www.linkedin.com/in/okkes-enes/")} className="p-3 cursor-pointer">
+            <Image 
+            width={36}
+            height={36}
+            className="w-8 h-8 object-contain"
+            src={"/assets/logo/linkedin.png"}
+            alt="Linkedin"
+            />
+          </button>
+          <button onClick={()=>window.open("https://github.com/EnesKymz")} className="p-3 cursor-pointer">
+            <Image 
+            width={36}
+            height={36}
+            className="w-8 h-8 object-contain"
+            src={"/assets/logo/github.png"}
+            alt="Github"
+            />
+          </button>
+        </div>
       </div>
-      <div className="flex flex-col justify-center items-center">
+      <div className="flex flex-col mt-5 justify-center items-center">
         {/* Başlık ve Arama */}
-        <div className="max-w-4xl mx-auto mb-12 text-center">
+        <div className="max-w-4xl mx-auto mb-12 text-center select-none">
           <h1 className="text-4xl font-bold text-indigo-900 mb-4">
             Kamu Duyuruları Takip Sistemi
           </h1>
