@@ -26,9 +26,6 @@ export default function BakanlikAlim() {
           setErrorMessage(null)
           setannouncementsData([])
           loading.current = true
-          if(!value){
-           return false;
-          }
           setSelectedBakanlik(value)
           //sanayi ve teknoloji bakanlığı haricinde aynı işlem olduğu için Adalet Bakanlığı içerisinde anlattım
           if(value.label ==="Adalet Bakanlığı"){
@@ -164,10 +161,12 @@ export default function BakanlikAlim() {
             const jsonData = await response.json();
             const announcements = []
             for(const doc of jsonData){ //çektiğimiz JSON dosyasındaki listeleri ayrı ayrı çekip announcements listesine ekliyoruz
-              let link;
+              let link ="";
+              if(doc.pageContent){
               for(const doc2 of doc.pageContent.linkAddress){//girdiğimiz verinin içerisindeki link [0] içerisinde olduğu için for kullandık
                 link = doc2.text
               }
+            }
               announcements.push({//announcements listesine ekliyoruz
                 title:doc.text,
                 date:doc.date,
@@ -182,23 +181,27 @@ export default function BakanlikAlim() {
               setErrorMessage(error.message)
               return true;
           }finally{
+            if(!value || value ===null){ //girilen değer null ise geri dön
+              return false;
+             }
             return true;
           }
       }
       const isGet =await getInformations() //async işlem olduğu için await ile çekiyoruz
       if(isGet) {
         loading.current= false //yüklendiyse loading = false yapıyoruz verileri gösteriyoruz
+      }else{
+        loading.current = true
       }
    
   }
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 p-8">
+      <div className="mt-2 min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 p-8">
       {/* Başlık ve Arama */}
       <div className="max-w-4xl mx-auto mb-12 text-center">
         <h1 className="text-4xl font-bold text-indigo-900 mb-4">
           Kamu Duyuruları Takip Sistemi
         </h1>
-        
         {/* Bakanlık Seçimi */}
         <div className="bg-white rounded-xl shadow-lg p-2 inline-block">
           <Autocomplete
