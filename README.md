@@ -1,7 +1,7 @@
 # 📢 Bakanlık Duyuruları Çekme Uygulaması
 
-Bu proje, belirli bir bakanlığın duyurularını otomatik olarak çekerek kullanıcıya sunan bir web uygulamasıdır.
-
+Bu proje, belirli bir bakanlığın duyurularını otomatik olarak çekerek kullanıcıya sunan bir web uygulamasıdır.    
+[Web sitesini açmak için tıklayınız.](https://bakanlik-alimlari.vercel.app/)
 # 🚀 Özellikler
 
 📡 Duyuruların Otomatik Çekilmesi: Bakanlık web sitesinden duyurular düzenli olarak alınır.
@@ -19,7 +19,7 @@ Deployment: Vercel
 Bu repoyu klonlayın:
 
 ```bash
-git clone [https://github.com/kullaniciadi/bakanlik-duyurulari.git](https://github.com/EnesKymz/bakanlik-alimlari.git)
+git clone https://github.com/EnesKymz/bakanlik-alimlari.git
 cd bakanlik-alimlari
 ```
 Gerekli bağımlılıkları yükleyin:
