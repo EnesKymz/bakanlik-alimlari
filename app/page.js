@@ -26,6 +26,9 @@ export default function BakanlikAlim() {
           setErrorMessage(null)
           setannouncementsData([])
           loading.current = true
+          if(!value){
+           return false;
+          }
           setSelectedBakanlik(value)
           //sanayi ve teknoloji bakanlığı haricinde aynı işlem olduğu için Adalet Bakanlığı içerisinde anlattım
           if(value.label ==="Adalet Bakanlığı"){
