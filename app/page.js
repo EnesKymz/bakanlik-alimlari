@@ -196,117 +196,143 @@ export default function BakanlikAlim() {
    
   }
     return (
-      <div className="mt-2 min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 p-8">
-      {/* Başlık ve Arama */}
-      <div className="max-w-4xl mx-auto mb-12 text-center">
-        <h1 className="text-4xl font-bold text-indigo-900 mb-4">
-          Kamu Duyuruları Takip Sistemi
-        </h1>
-        {/* Bakanlık Seçimi */}
-        <div className="bg-white rounded-xl shadow-lg p-2 inline-block">
-          <Autocomplete
-            disablePortal
-            options={bakanliklar}
-            sx={{ 
-              width: "20rem",
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "12px",
-                padding: "8px"
-              }
-            }}
-            onChange={(event, newValue) => getDuyurular(newValue)}
-            renderInput={(params) => (
-              <TextField 
-                {...params}
-                label="Bakanlık Seçin" 
-                variant="outlined"
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <SearchIcon className="text-indigo-600 mr-2" />
-                  )
-                }}
-              />
-            )}
-            renderOption={(props, option) => (
-              <li {...props} key={option?.key} className="hover:bg-indigo-50 p-3 rounded-lg">
-                <div className="flex items-center">
-                  <GovernmentIcon className="text-indigo-600 mr-3" />
-                  <span className="font-medium">{option.label}</span>
-                </div>
-              </li>
-            )}
+    <div className=" bg-gradient-to-b from-blue-50 to-indigo-50">
+      <div className="min-h-screen p-8">
+      {/*Kişisel Bilgiler */}
+      <div className="flex items-end justify-end">
+        
+        <button onClick={()=>window.open("https://www.linkedin.com/in/okkes-enes/")} className="p-3 cursor-pointer">
+          <Image 
+          width={36}
+          height={36}
+          className="w-8 h-8 object-contain"
+          src={"/assets/logo/linkedin.png"}
+          alt="Linkedin"
           />
-        </div>
+        </button>
+        <button onClick={()=>window.open("https://github.com/EnesKymz")} className="p-3 cursor-pointer">
+          <Image 
+          width={36}
+          height={36}
+          className="w-8 h-8 object-contain"
+          src={"/assets/logo/github.png"}
+          alt="Github"
+          />
+        </button>
       </div>
-    
-      {/* Alımlar Listesi */}
-      {selectedBakanlik && (
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-            <div className="flex items-center mb-6">
-              <Image 
-                src={selectedBakanlik.logo} 
-                alt={selectedBakanlik.label}
-                width={36}
-                height={36}
-                className="w-16 h-16 mr-4 object-contain"
-              />
-              <h2 className="text-2xl font-bold text-gray-800">
-                {selectedBakanlik.label} Duyurular
-              </h2>
-            </div>
-    
-            {/* Duyurular Grid */}
-            {!loading.current ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {
-              !errorMessage ? (
-              announcementsDatas.map((announcement, index) => (
-                <div 
-                  key={index}
-                  className="group bg-gray-50 hover:bg-white rounded-xl p-6 transition-all duration-300 shadow-md hover:shadow-lg border border-gray-200 hover:border-indigo-300"
-                >
-                  <div className="flex items-start mb-4">
-                    <div className="bg-indigo-100 p-3 rounded-lg mr-4">
-                      <DocumentIcon className="w-6 h-6 text-indigo-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800 mb-1">
-                        {announcement.title}
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        {announcement.date}
-                      </p>
-                    </div>
+      <div className="flex flex-col justify-center items-center">
+        {/* Başlık ve Arama */}
+        <div className="max-w-4xl mx-auto mb-12 text-center">
+          <h1 className="text-4xl font-bold text-indigo-900 mb-4">
+            Kamu Duyuruları Takip Sistemi
+          </h1>
+          {/* Bakanlık Seçimi */}
+          <div className="bg-white rounded-xl shadow-lg p-2 inline-block">
+            <Autocomplete
+              disablePortal
+              options={bakanliklar}
+              sx={{ 
+                width: "20rem",
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "12px",
+                  padding: "8px"
+                }
+              }}
+              onChange={(event, newValue) => getDuyurular(newValue)}
+              renderInput={(params) => (
+                <TextField 
+                  {...params}
+                  label="Bakanlık Seçin" 
+                  variant="outlined"
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <SearchIcon className="text-indigo-600 mr-2" />
+                    )
+                  }}
+                />
+              )}
+              renderOption={(props, option) => (
+                <li {...props} key={option?.key} className="hover:bg-indigo-50 p-3 rounded-lg">
+                  <div className="flex items-center">
+                    <GovernmentIcon className="text-indigo-600 mr-3" />
+                    <span className="font-medium">{option.label}</span>
                   </div>
-                  
-                  <div className="text-sm text-gray-600 line-clamp-3 mb-4">
-                    {announcement.content}
-                  </div>
-    
-                  <div className="flex items-center justify-between">
-                    {
-                      announcement.department && ( <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                        {announcement.department||null }
-                      </span>)
-                    }
-                   
-                    <button onClick={()=>window.open(announcement.link,'_blank')} className="text-indigo-600 cursor-pointer hover:text-indigo-800 flex items-center">
-                      Detaylı Görüntüle
-                      <ArrowRightIcon className="w-4 h-4 ml-2" />
-                    </button>
-                  </div>
-                </div>
-              ))
-            ):(<div>{errorMessage}</div>)
-              }
-            </div>
-            ) : (<CircularProgress/>)}
-            
+                </li>
+              )}
+            />
           </div>
         </div>
-      )}
+      
+        {/* Alımlar Listesi */}
+        {selectedBakanlik && (
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+              <div className="flex items-center mb-6">
+                <Image 
+                  src={selectedBakanlik.logo} 
+                  alt={selectedBakanlik.label}
+                  width={36}
+                  height={36}
+                  className="w-16 h-16 mr-4 object-contain"
+                />
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {selectedBakanlik.label} Duyurular
+                </h2>
+              </div>
+      
+              {/* Duyurular Grid */}
+              {!loading.current ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {
+                !errorMessage ? (
+                announcementsDatas.map((announcement, index) => (
+                  <div 
+                    key={index}
+                    className="group bg-gray-50 hover:bg-white rounded-xl p-6 transition-all duration-300 shadow-md hover:shadow-lg border border-gray-200 hover:border-indigo-300"
+                  >
+                    <div className="flex items-start mb-4">
+                      <div className="bg-indigo-100 p-3 rounded-lg mr-4">
+                        <DocumentIcon className="w-6 h-6 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-800 mb-1">
+                          {announcement.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {announcement.date}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-gray-600 line-clamp-3 mb-4">
+                      {announcement.content}
+                    </div>
+      
+                    <div className="flex items-center justify-between">
+                      {
+                        announcement.department && ( <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                          {announcement.department||null }
+                        </span>)
+                      }
+                    
+                      <button onClick={()=>window.open(announcement.link,'_blank')} className="text-indigo-600 cursor-pointer hover:text-indigo-800 flex items-center">
+                        Detaylı Görüntüle
+                        <ArrowRightIcon className="w-4 h-4 ml-2" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ):(<div>{errorMessage}</div>)
+                }
+              </div>
+              ) : (<CircularProgress/>)}
+              
+            </div>
+          </div>
+        )}
+      </div>
+      </div>
     </div>
   );
   
