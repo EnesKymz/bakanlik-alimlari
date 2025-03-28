@@ -20,7 +20,7 @@ Bu repoyu klonlayın:
 
 ```bash
 git clone [https://github.com/kullaniciadi/bakanlik-duyurulari.git](https://github.com/EnesKymz/bakanlik-alimlari.git)
-cd bakanlik-duyurulari
+cd bakanlik-alimlari
 ```
 Gerekli bağımlılıkları yükleyin:
 
