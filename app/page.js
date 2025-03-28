@@ -9,10 +9,10 @@ import Image from "next/image";
 
 //bakanlıkların ismi ve sitelerini buraya ekliyoruz
 const bakanliklar = [
-    { label: "Adalet Bakanlığı", site: "https://www.adalet.gov.tr/arsiv?hl=tr",logo:"/assets/adaletbakanligi.jpg" },
-    { label: "Sağlık Bakanlığı", site: "https://www.saglik.gov.tr/TR-99316/personel-duyurulari.html",logo:"/assets/saglikbakanligi.png" },
-    { label: "Çevre Ve Şehircilik Bakanlığı", site: "https://personeldb.csb.gov.tr/duyurular",logo:"/assets/cevrevesehircilik.jpg" },
-    {label:"Sanayi Ve Teknoloji Bakanlığı", site:"https://api.sanayi.gov.tr/api/Duyuru/GetDuyurular?adet=10&sayfa=1&yayinSekli=0",logo:"/assets/sanayiteknolojibakanligi.png"}
+    { key:1,label: "Adalet Bakanlığı", site: "https://www.adalet.gov.tr/arsiv?hl=tr",logo:"/assets/adaletbakanligi.jpg" },
+    { key:2,label: "Sağlık Bakanlığı", site: "https://www.saglik.gov.tr/TR-99316/personel-duyurulari.html",logo:"/assets/saglikbakanligi.png" },
+    { key:3,label: "Çevre Ve Şehircilik Bakanlığı", site: "https://personeldb.csb.gov.tr/duyurular",logo:"/assets/cevrevesehircilik.jpg" },
+    {key:4,label:"Sanayi Ve Teknoloji Bakanlığı", site:"https://api.sanayi.gov.tr/api/Duyuru/GetDuyurular?adet=10&sayfa=1&yayinSekli=0",logo:"/assets/sanayiteknolojibakanligi.png"}
   ];
 
 export default function BakanlikAlim() {
@@ -217,7 +217,7 @@ export default function BakanlikAlim() {
             onChange={(event, newValue) => getDuyurular(newValue)}
             renderInput={(params) => (
               <TextField 
-                {...params} 
+                {...params}
                 label="Bakanlık Seçin" 
                 variant="outlined"
                 InputProps={{
@@ -229,7 +229,7 @@ export default function BakanlikAlim() {
               />
             )}
             renderOption={(props, option) => (
-              <li {...props} className="hover:bg-indigo-50 p-3 rounded-lg">
+              <li {...props} key={option?.key} className="hover:bg-indigo-50 p-3 rounded-lg">
                 <div className="flex items-center">
                   <GovernmentIcon className="text-indigo-600 mr-3" />
                   <span className="font-medium">{option.label}</span>
