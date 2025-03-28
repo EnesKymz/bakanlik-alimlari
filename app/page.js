@@ -9,10 +9,11 @@ import Image from "next/image";
 
 //bakanlıkların ismi ve sitelerini buraya ekliyoruz
 const bakanliklar = [
-    { key:1,label: "Adalet Bakanlığı", site: "https://www.adalet.gov.tr/arsiv?hl=tr",logo:"/assets/adaletbakanligi.jpg" },
-    { key:2,label: "Sağlık Bakanlığı", site: "https://www.saglik.gov.tr/TR-99316/personel-duyurulari.html",logo:"/assets/saglikbakanligi.png" },
-    { key:3,label: "Çevre Ve Şehircilik Bakanlığı", site: "https://personeldb.csb.gov.tr/duyurular",logo:"/assets/cevrevesehircilik.jpg" },
-    {key:4,label:"Sanayi Ve Teknoloji Bakanlığı", site:"https://api.sanayi.gov.tr/api/Duyuru/GetDuyurular?adet=10&sayfa=1&yayinSekli=0",logo:"/assets/sanayiteknolojibakanligi.png"}
+    {key:1,label: "Adalet Bakanlığı", site: "https://www.adalet.gov.tr/arsiv?hl=tr",logo:"/assets/adaletbakanligi.jpg" },
+    {key:2,label: "Sağlık Bakanlığı", site: "https://www.saglik.gov.tr/TR-99316/personel-duyurulari.html",logo:"/assets/saglikbakanligi.png" },
+    {key:3,label: "Çevre Ve Şehircilik Bakanlığı", site: "https://personeldb.csb.gov.tr/duyurular",logo:"/assets/cevrevesehircilik.jpg" },
+    {key:4,label:"Sanayi Ve Teknoloji Bakanlığı", site:"https://api.sanayi.gov.tr/api/Duyuru/GetDuyurular?adet=10&sayfa=1&yayinSekli=0",logo:"/assets/sanayiteknolojibakanligi.png"},
+    {key:5,label:"Kültür Ve Turizm Bakanlığı",site:"https://www.ktb.gov.tr/TR-97181/duyurular.html",logo:"/assets/kültürveturizmbakanligi.png"}
   ];
 
 export default function BakanlikAlim() {
@@ -184,6 +185,35 @@ export default function BakanlikAlim() {
               })
             }
             setannouncementsData(announcements)//set edip returne gönderiyoruz
+          }
+          if(value.label ==="Kültür Ve Turizm Bakanlığı"){
+            const proxyUrl = "https://api.corsproxy.io/";
+            const targetUrl =  value.site;
+  
+            fetch(proxyUrl + targetUrl,{
+              headers:{
+                'Accept-Language': 'tr-TR,tr;q=0.9',
+              }
+            })
+            .then(response => response.text())
+            .then(data => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(data, "text/html");        
+          const announcements = []
+          const items = doc.querySelectorAll('ul.custom-list > li');
+          for(const doc of items){
+           const aElement = doc.querySelector('a')
+           if(!aElement) return;
+           const linkElement = aElement.getAttribute('href')
+           const titleElement = aElement.textContent.trim()
+           announcements.push({
+            title: titleElement,
+            link:"https://www.ktb.gov.tr"+linkElement,
+           })
+          }
+          setannouncementsData(announcements)
+            })
+            .catch(error => console.error("Hata:", error));
           }
           } catch (error) {
               console.error("Hata oluştu:", error.message);
