@@ -1,5 +1,6 @@
 "use client"
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function NotFound() {
@@ -28,9 +29,9 @@ export default function NotFound() {
         transition={{ delay: 0.6, duration: 0.5 }}
         className="mt-6"
       >
-        <button  className="flex items-center p-3 bg-blue-500 text-white rounded cursor-pointer" onClick={() => router.push("/")}>
+        <Link  className="flex items-center p-3 bg-blue-500 text-white rounded cursor-pointer" href={"/"}>
            Ana Sayfaya Dön
-        </button>
+        </Link>
       </motion.div>
     </div>
   );
