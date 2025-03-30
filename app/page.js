@@ -34,6 +34,7 @@ export default function BakanlikAlim() {
       const getInformations =async() =>{
         try {
           if(!value || value ===null){ //girilen değer null ise geri dön
+            setSelectedBakanlik(null)
             return false;
           }
           setErrorMessage(null)
