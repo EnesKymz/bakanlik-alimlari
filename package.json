@@ -16,6 +16,7 @@
     "@mui/styled-engine-sc": "^7.0.0",
     "axios": "^1.8.4",
     "cheerio": "^1.0.0",
+    "motion": "^12.6.2",
     "next": "15.2.4",
     "postcss": "^8.5.3",
     "react": "^19.0.0",

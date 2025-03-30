@@ -33,6 +33,9 @@ export default function BakanlikAlim() {
     async function getDuyurular(value) {
       const getInformations =async() =>{
         try {
+          if(!value || value ===null){ //girilen değer null ise geri dön
+            return false;
+          }
           setErrorMessage(null)
           setannouncementsData([])
           loading.current = true
