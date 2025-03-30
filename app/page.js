@@ -242,7 +242,7 @@ export default function BakanlikAlim() {
       <div className="min-h-screen p-8">
       <div className="flex justify-between">
         {/*Uygulama Link */}
-        {!inApp && <button onClick={()=>window.open("https://drive.google.com/file/d/1oUMsu7x-cIR9fjOZ0-RNHW3sAupLzGv7/view?usp=sharing")} className="
+        {!idsfdnApp && <button onClick={()=>window.open("https://drive.google.com/file/d/1oUMsu7x-cIR9fjOZ0-RNHW3sAupLzGv7/view?usp=sharing")} className="
           px-6 py-3
           bg-gradient-to-r from-blue-500 to-blue-600
           text-white font-medium text-lg
